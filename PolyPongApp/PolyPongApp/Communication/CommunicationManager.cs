@@ -16,6 +16,7 @@ namespace PolyPongApp.Communication
         {
             //A voir pour le tester
             Connection = new HubConnectionBuilder().WithUrl("http://vps805844.ovh.net/" + "/PolyHub").Build();
+            ListenControlEvent();
         }
 
         public static CommunicationManager GetInstance()
@@ -40,6 +41,19 @@ namespace PolyPongApp.Communication
             {
                 Log.Warning("Error","Erreur lors de la connexion au serveur");
             }
+        }
+
+        public void ListenControlEvent()
+        {
+            Connection.On("PlayerConnected", () =>
+            {
+                
+            });
+            
+            Connection.On("PlayerWrongLogin", () =>
+            {
+                //do something on your UI maybe?
+            });
         }
 
         public async Task Player_Send_Left(int idUser)
