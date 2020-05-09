@@ -6,15 +6,13 @@
              mc:Ignorable="d"
              x:Class="PolyPongApp.PolyGamePad">
     <ContentPage.Content>
-        <StackLayout Orientation="Horizontal" HorizontalOptions="Center">
-            <Grid >
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <Button Grid.Column="0" Text="Gauche"/>
-                <Button Grid.Column="1" Text="Droite"/>
-            </Grid>
-        </StackLayout>
+        <Grid HorizontalOptions="CenterAndExpand">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Button Grid.Column="0" Text="Gauche" FontAttributes="Bold" FontSize="30" WidthRequest="200" />
+            <Button Grid.Column="1" Text="Droite" FontAttributes="Bold" FontSize="30" />
+        </Grid>
     </ContentPage.Content>
 </ContentPage>

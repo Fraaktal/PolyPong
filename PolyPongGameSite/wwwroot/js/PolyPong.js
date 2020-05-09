@@ -7,7 +7,7 @@ var IdGame = 42; //todo Récupérer l'id de la partie en cours qui sera passé a
 var IdJ1 = 42; //todo Récupérer l'id du j1 qui sera passé avec l'URL
 var IdJ2 = 42; //todo Récupérer l'id du j2 qui sera passé avec l'URL
 
-connection.on("Player1_Left", function (idGame) {
+connection.on("Player_Left", function (idPlayer, idGame) {
     //comportement tant que le joueur 1 envoie gauche
     //On check à chaque fois que l'info qu'on récupère concerne notre partie.
     if (idGame == IdGame) {
@@ -15,36 +15,15 @@ connection.on("Player1_Left", function (idGame) {
     }
 });
 
-connection.on("Player1_Right", function (idGame) {
-   //comportement tant que le joueur 1 envoie droite
-   if (idGame == IdGame) {
-
-   }
-});
-
-connection.on("Player2_Left", function (idGame) {
-   //comportement tant que le joueur 2 envoie gauche
-   if (idGame == IdGame) {
-
-   }
-});
-
-connection.on("Player2_Right", function (idGame) {
+connection.on("Player_Right", function (idPlayer, idGame) {
    //comportement tant que le joueur 2 envoie droite
    if (idGame == IdGame) {
 
    }
 });
 
-connection.on("Player1_StopMoving", function (idGame) {
+connection.on("Player_StopMoving", function (idPlayer, idGame) {
    //comportement tant que le joueur 1 arrete de bouger
-   if (idGame == IdGame) {
-
-   }
-});
-
-connection.on("Player2_StopMoving", function (idGame) {
-   //comportement tant que le joueur 2 arrete de bouger
    if (idGame == IdGame) {
 
    }

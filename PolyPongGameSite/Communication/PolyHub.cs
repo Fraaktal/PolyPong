@@ -5,34 +5,19 @@ namespace PolyPongGameSite.Communication
 {
     public class PolyHub : Hub
     {
-        public async Task Player1_Left(int idParty)
+        public async Task Player_Left(int idPlayer, int idParty)
         {
-            await Clients.All.SendAsync("Player1_Left", idParty);
+            await Clients.All.SendAsync("Player_Left", idPlayer, idParty);
         }
 
-        public async Task Player1_Right(int idParty)
+        public async Task Player_Right(int idPlayer, int idParty)
         {
-            await Clients.All.SendAsync("Player1_Right", idParty);
+            await Clients.All.SendAsync("Player_Right", idPlayer, idParty);
         }
 
-        public async Task Player2_Left(int idParty)
+        public async Task Player_StopMoving(int idPlayer, int idParty)
         {
-            await Clients.All.SendAsync("Player2_Left", idParty);
-        }
-
-        public async Task Player2_Right(int idParty)
-        {
-            await Clients.All.SendAsync("Player2_Right", idParty);
-        }
-
-        public async Task Player1_StopMoving(int idParty)
-        {
-            await Clients.All.SendAsync("Player1_StopMoving", idParty);
-        }
-
-        public async Task Player2_StopMoving(int idParty)
-        {
-            await Clients.All.SendAsync("Player2_StopMoving",idParty);
+            await Clients.All.SendAsync("Player_StopMoving", idParty);
         }
 
         public async Task EndGame(int p1Id, int p2Id, int p1Score, int p2Score, int idParty)
