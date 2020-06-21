@@ -1,28 +1,76 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
+using PolyPongGameSite.Business;
+using PolyPongGameSite.Controller;
+using PolyPongGameSite.Manager;
 
 namespace PolyPongGameSite.Communication
 {
     public class PolyHub : Hub
     {
-        public async Task Player_Left(int idPlayer, int idParty)
+        //Partie Jeu
+
+        public void AskForGame(int idUser)
         {
-            await Clients.All.SendAsync("Player_Left", idPlayer, idParty);
+            GameManager.GetInstance().GetExistingGameOrCreateIt(Context.ConnectionId, idUser);
         }
 
-        public async Task Player_Right(int idPlayer, int idParty)
+        public async Task PlayerConnectedToGame(string playerId, string GameId, bool isP2)
         {
-            await Clients.All.SendAsync("Player_Right", idPlayer, idParty);
+            await Clients.Clients(playerId).SendAsync("CurrentPlayerConnected", playerId, GameId, isP2);
+        }
+        
+        public async Task StartGame(string player1Id, string player2Id)
+        {
+            await Clients.Clients(player1Id, player2Id).SendAsync("StartGame");
+        }
+        
+        public async Task Player1_Left(string player1ConnectionId, string player2ConnectionId)
+        {
+            await Clients.Clients(player1ConnectionId, player2ConnectionId).SendAsync("Player1_Left");
         }
 
-        public async Task Player_StopMoving(int idPlayer, int idParty)
+        public async Task Player1_Right(string player1ConnectionId, string player2ConnectionId)
         {
-            await Clients.All.SendAsync("Player_StopMoving", idParty);
+            await Clients.Clients(player1ConnectionId, player2ConnectionId).SendAsync("Player1_Right");
         }
 
-        public async Task EndGame(int p1Id, int p2Id, int p1Score, int p2Score, int idParty)
+        public async Task Player1_StopMoving(string player1ConnectionId, string player2ConnectionId)
         {
-            //Enregistrer le résultat en base pour chacun des joueurs
+            await Clients.Clients(player1ConnectionId, player2ConnectionId).SendAsync("Player1_StopMoving");
+        }
+
+        public async Task Player2_Left(string player1ConnectionId, string player2ConnectionId)
+        {
+            await Clients.Clients(player1ConnectionId, player2ConnectionId).SendAsync("Player2_Left");
+        }
+
+        public async Task Player2_Right(string player1ConnectionId, string player2ConnectionId)
+        {
+            await Clients.Clients(player1ConnectionId, player2ConnectionId).SendAsync("Player2_Right");
+        }
+        
+        public async Task Player2_StopMoving(string player1ConnectionId, string player2ConnectionId)
+        {
+            await Clients.Clients(player1ConnectionId, player2ConnectionId).SendAsync("Player2_StopMoving");
+        }
+
+        public async Task EndGame(int p1Score, int p2Score, string idParty)
+        {
+            await Clients.Clients(idParty).SendAsync("EndGame", p1Score, p2Score);
+        }
+
+        //Partie App
+
+        public async Task AskForLog(string log, string pass)
+        {
+            //TODO encrypt
+
+            string sender = Context.ConnectionId;
+
+            bool isLogOk = CUserController.GetInstance().TryLogUser(log,pass);
+
+            await Clients.Clients(sender).SendAsync("Connexion", isLogOk);
         }
     }
 }
