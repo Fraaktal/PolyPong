@@ -11,11 +11,11 @@ namespace PolyPongGameSite.Business
 {
     public class Game
     {
-        public Game(string connectionIdP1, int idP1)
+        public Game(string connectionIdP1, string idP1)
         {
             GameConnection = new HubConnectionBuilder().WithUrl("http://vps805844.ovh.net:50322/GameHub").Build();
 #if DEBUG
-            GameConnection = new HubConnectionBuilder().WithUrl("http://localhost:50322/GameHub").Build();
+            GameConnection = new HubConnectionBuilder().WithUrl("https://localhost:44396/PolyHub").Build();
 #endif
             Player1ConnectionId = connectionIdP1;
             Player1Id = idP1;
@@ -23,9 +23,6 @@ namespace PolyPongGameSite.Business
             Connect();
 
             ListenControllerEvent();
-
-
-            GameConnection.InvokeAsync("PlayerConnectedToGame", Player1ConnectionId, GameId, false);
         }
 
         public string GameId
@@ -38,6 +35,8 @@ namespace PolyPongGameSite.Business
             try
             {
                 await GameConnection.StartAsync();
+
+                await GameConnection.InvokeAsync("PlayerConnectedToGame", Player1ConnectionId, GameId, false);
             }
             catch (Exception e)
             {
@@ -65,15 +64,15 @@ namespace PolyPongGameSite.Business
 
         public string Player2ConnectionId { get; set; }
 
-        public int Player1Id { get; set; }
+        public string Player1Id { get; set; }
 
-        public int Player2Id { get; set; }
+        public string Player2Id { get; set; }
 
         public int Player1Score { get; set; }
 
         public int Player2Score { get; set; }
 
-        public void JoinPlayer(string idCP2, int idP2)
+        public void JoinPlayer(string idCP2, string idP2)
         {
             Player2ConnectionId = idCP2;
             Player2Id = idP2;

@@ -10,9 +10,9 @@ namespace PolyPongGameSite.Communication
     {
         //Partie Jeu
 
-        public void AskForGame(int idUser)
+        public async Task AskForGame(string idUserS)
         {
-            GameManager.GetInstance().GetExistingGameOrCreateIt(Context.ConnectionId, idUser);
+            GameManager.GetInstance().GetExistingGameOrCreateIt(Context.ConnectionId, idUserS);
         }
 
         public async Task PlayerConnectedToGame(string playerId, string GameId, bool isP2)
@@ -25,34 +25,19 @@ namespace PolyPongGameSite.Communication
             await Clients.Clients(player1Id, player2Id).SendAsync("StartGame");
         }
         
-        public async Task Player1_Left(string player1ConnectionId, string player2ConnectionId)
+        public async Task Player_Left(string player1ConnectionId, string player2ConnectionId, bool isP1)
         {
-            await Clients.Clients(player1ConnectionId, player2ConnectionId).SendAsync("Player1_Left");
+            await Clients.Clients(player1ConnectionId, player2ConnectionId).SendAsync("Player_Left", isP1);
         }
 
-        public async Task Player1_Right(string player1ConnectionId, string player2ConnectionId)
+        public async Task Player_Right(string player1ConnectionId, string player2ConnectionId, bool isP1)
         {
-            await Clients.Clients(player1ConnectionId, player2ConnectionId).SendAsync("Player1_Right");
+            await Clients.Clients(player1ConnectionId, player2ConnectionId).SendAsync("Player_Right", isP1);
         }
 
-        public async Task Player1_StopMoving(string player1ConnectionId, string player2ConnectionId)
+        public async Task Player_StopMoving(string player1ConnectionId, string player2ConnectionId, bool isP1)
         {
-            await Clients.Clients(player1ConnectionId, player2ConnectionId).SendAsync("Player1_StopMoving");
-        }
-
-        public async Task Player2_Left(string player1ConnectionId, string player2ConnectionId)
-        {
-            await Clients.Clients(player1ConnectionId, player2ConnectionId).SendAsync("Player2_Left");
-        }
-
-        public async Task Player2_Right(string player1ConnectionId, string player2ConnectionId)
-        {
-            await Clients.Clients(player1ConnectionId, player2ConnectionId).SendAsync("Player2_Right");
-        }
-        
-        public async Task Player2_StopMoving(string player1ConnectionId, string player2ConnectionId)
-        {
-            await Clients.Clients(player1ConnectionId, player2ConnectionId).SendAsync("Player2_StopMoving");
+            await Clients.Clients(player1ConnectionId, player2ConnectionId).SendAsync("Player_StopMoving", isP1);
         }
 
         public async Task EndGame(int p1Score, int p2Score, string idParty)

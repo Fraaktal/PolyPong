@@ -28,7 +28,7 @@ namespace PolyPongGameSite.Manager
         public List<Game> Games { get; set; }
 
 
-        public Game GetExistingGameOrCreateIt(string idConnectionPlayer, int idPlayer)
+        public Game GetExistingGameOrCreateIt(string idConnectionPlayer, string idPlayer)
         {
             Game res = null;
             string id = TryJoinGame(idConnectionPlayer, idPlayer);
@@ -42,7 +42,7 @@ namespace PolyPongGameSite.Manager
             return res;
         }
 
-        private string TryJoinGame(string idConnectionPlayer, int idPlayer)
+        private string TryJoinGame(string idConnectionPlayer, string idPlayer)
         {
             foreach (var game in Games)
             {
