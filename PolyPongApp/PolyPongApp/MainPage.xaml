@@ -24,8 +24,12 @@
                 <Entry x:Name="UserNameEntry"/>
                 <Label>Mot de passe :</Label>
                 <Entry IsPassword="true" x:Name="PasswordEntry"/>
+                <Label>Id de partie:</Label>
+                <Entry x:Name="IdEntry"/>
                 <Label>Adresse Ip:</Label>
-                <Entry x:Name="IpAdressEntry"/>
+                <Entry x:Name="IpEntry"/>
+                <Label>Port :</Label>
+                <Entry x:Name="PortEntry"/>
                 <Button Margin="0,10,0,0" Text="Connexion au serveur"
                         Clicked="OnBtnConnection_Clicked"
                         BackgroundColor="#2196F3"

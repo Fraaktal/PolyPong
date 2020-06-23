@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.AspNetCore.SignalR.Client;
+using Xamarin.Forms;
 using Xamarin.Forms.Internals;
 
 namespace PolyPongApp.Communication
@@ -14,9 +15,7 @@ namespace PolyPongApp.Communication
 
         private CommunicationManager()
         {
-            //A voir pour le tester
-            Connection = new HubConnectionBuilder().WithUrl("http://vps805844.ovh.net/" + "/PolyHub").Build();
-            ListenControlEvent();
+            GameId = "";
         }
 
         public static CommunicationManager GetInstance()
@@ -31,29 +30,27 @@ namespace PolyPongApp.Communication
 
         public HubConnection Connection { get; set; }
 
-        public async Task Connect()
+        public string GameId { get; set; }
+
+        public int PlayerId { get; set; }
+
+        public void Build(string ip, string port)
+        {
+            Connection = new HubConnectionBuilder().WithUrl($"http://{ip}:{port}/PolyHub").Build();
+        }
+
+        public async Task ConnectAndTryLog(string login, string password, string uniqueIdConnection)
         {
             try
             {
                 await Connection.StartAsync();
+
+                await Connection.InvokeAsync("User_Try_Log_From_App", login, password, uniqueIdConnection);
             }
             catch (Exception e)
             {
                 Log.Warning("Error","Erreur lors de la connexion au serveur");
             }
-        }
-
-        public void ListenControlEvent()
-        {
-            Connection.On("PlayerConnected", () =>
-            {
-                
-            });
-            
-            Connection.On("PlayerWrongLogin", () =>
-            {
-                //do something on your UI maybe?
-            });
         }
 
         public async Task Player_Send_Left(int idUser)

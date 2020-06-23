@@ -2,17 +2,41 @@
 
 //Crée la connexion au hub
 var connection = new signalR.HubConnectionBuilder().withUrl("/PolyHub").build();
-
-
-var urlParams = new URLSearchParams(window.location.search);
-var idUser = urlParams.get('userId');
+//https://192.168.1.13:45455/?userId=1
 
 var gameId = "";
 var playerId = "";
 var isPlayerP2 = false;
+var currentState = "WaitForConnexion";
 
-//?userId=4
+var scoreJ1 = 0;
+var scoreJ2 = 0;
+var rebond = 0;
+var pause = false;
+var sombre = false;
+var canvas = document.getElementById("canvas");
+var longDemiRaquette = canvas.height / 10;
+var context = null;
 
+var msg1 = "";
+var msg2 = "";
+
+if (canvas.getContext) {
+    context = canvas.getContext('2d');
+}
+
+var totalHeight = 0;
+var totalWidth = 0;
+displayCanvas();
+window.addEventListener("resize", displayCanvas);
+
+var balle = new Balle(canvas.width / 2, canvas.height / 2, 1, 3, Math.PI, 8);
+var raquette1 = new Raquette(0, 4 * canvas.height / 10);
+var raquette2 = new Raquette(0, 4 * canvas.height / 10);
+
+connection.on("StartGame", function (isP1) {
+    playGame();
+});
 
 connection.on("Player_Left", function (isP1) {
     //comportement tant que le joueur 1 envoie gauche
@@ -30,21 +54,45 @@ connection.on("Player_StopMoving", function (isP1) {
 
 });
 
-connection.on("CurrentPlayerConnected", function (connectionId, gameId, isP2) {
-	gameId = connectionId;
-	playerId = gameId;
+connection.on("ConnectAndDisplayWaitingConnexionScreen", function (idPlayer, idGame, uniqueIdToDisplay, isP2) {
+	gameId = idGame;
+	playerId = idPlayer;
 	isPlayerP2 = isP2;
+
+	msg1 = "Connectez-vous avec l'App et entrez le code suivant";
+    msg2 = uniqueIdToDisplay;
+    currentState = "DisplayMessage";
+    displayWaitingScreen();
+});
+
+connection.on("AppConnected", function () {
+
+    msg1 = "En attente de l'adversaire";
+    msg2 = "";
+    currentState = "DisplayMessage";
+    displayWaitingScreen();
 });
 
 //On démarre la connexion
 connection.start().then(function () {
     console.log("Connexion établie");
-    connection.invoke("AskForGame",idUser).catch(function (err) {
+    connection.invoke("AskForGame").catch(function (err) {
         return console.error(err.toString());
     });
 }).catch(function (err) {
     return console.error(err.toString());
 });
+
+function displayWaitingScreen() {
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    context.save();
+    context.font = "bold 40pt Calibri,Geneva,Arial";
+    context.fillStyle = "#2196F3";
+    context.textAlign = 'center';
+    context.fillText(msg1, totalWidth/2,totalHeight/2-50);
+    context.fillText(msg2, totalWidth/2,totalHeight/2+10);
+    context.restore();
+}
 
 //La fonction qui recupere les inputs clavier pour lancer les deplacements des raquettes
 //(temporaire, pour le test)
@@ -129,61 +177,42 @@ function drawRaquettes() {
 	context.fillRect(canvas.width - 30, longDemiRaquette + raquette2.position, 5, canvas.height / 5);
 }
 
-var scoreJ1 = 0;
-var scoreJ2 = 0;
-var rebond = 0;
-var pause = false;
-var sombre = false;
-var canvas = document.getElementById("canvas");
-var longDemiRaquette = canvas.height / 10;
-var context = null;
-
-if (canvas.getContext) {
-	context = canvas.getContext('2d');
-}
-
-var totalHeight = 0;
-var totalWidth = 0;
-displayCanvas();
-document.addEventListener('keydown', actionKeyCode);
-
 function displayCanvas() {
     totalHeight = window.innerHeight * 0.98;
     totalWidth = window.innerWidth * 0.98;
     context.canvas.height = totalHeight;
     context.canvas.width = totalWidth;
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    if (currentState == "DisplayMessage") {
+        displayWaitingScreen();
+    }
 }
 
-window.addEventListener("resize", displayCanvas);
-
-var balle = new Balle(canvas.width / 2, canvas.height / 2, 1, 3, Math.PI, 8);
-var raquette1 = new Raquette(0, 4 * canvas.height / 10);
-var raquette2 = new Raquette(0, 4 * canvas.height / 10);
-//fonction qui fait tourner le jeu
-setInterval(function () {
-	if (!pause) {
-		drawField();
-		drawCoordinates(balle.positionX, balle.positionY, "#FFFFFF", balle.taille);
-		drawRaquettes();
-		mouvBalle();
-		rebond = detecRebond(rebond);
-		while (balle.angle < 0) {
-			balle.angle += 360;
-		}
-		while (balle.angle > 360) {
-			balle.angle -= 360;
-		}
-	}
-	else if (!sombre) {
-		context.fillStyle = "rgba(0,0,0,0.3)";
-		context.fillRect(0, 0, canvas.width, canvas.height);
-		context.font = "100px Courrier";
-		context.fillStyle = "red";
-		context.textAlign = "center";
-		context.fillText("P A U S E", canvas.width / 2, canvas.height / 2 + 20);
-		sombre = true;
-	}
-}, 10);
-
-
-
+function playGame() {
+    document.addEventListener('keydown', actionKeyCode);
+    //fonction qui fait tourner le jeu
+    setInterval(function () {
+        if (!pause) {
+            drawField();
+            drawCoordinates(balle.positionX, balle.positionY, "#FFFFFF", balle.taille);
+            drawRaquettes();
+            mouvBalle();
+            rebond = detecRebond(rebond);
+            while (balle.angle < 0) {
+                balle.angle += 360;
+            }
+            while (balle.angle > 360) {
+                balle.angle -= 360;
+            }
+        }
+        else if (!sombre) {
+            context.fillStyle = "rgba(0,0,0,0.3)";
+            context.fillRect(0, 0, canvas.width, canvas.height);
+            context.font = "100px Courrier";
+            context.fillStyle = "red";
+            context.textAlign = "center";
+            context.fillText("P A U S E", canvas.width / 2, canvas.height / 2 + 20);
+            sombre = true;
+        }
+    }, 10);
+}

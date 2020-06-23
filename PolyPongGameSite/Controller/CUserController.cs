@@ -22,21 +22,24 @@ namespace PolyPongGameSite.Controller
             return _instance;
         }
 
-        public bool TryLogUser(string login, string password)
+        public bool TryLogUser(string login, string password, out int id)
         {
             MySqlConnection connection = GetDBConnection();
             bool result = false;
+            id = -1;
+
             try
             {
                 Console.WriteLine("Connecting to MySQL...");
                 connection.Open();
 
-                string sql = $"SELECT * FROM User WHERE email={login} and password={password}";
+                string sql = $"SELECT * FROM User WHERE email='{login}' AND password='{password}'";
                 MySqlCommand cmd = new MySqlCommand(sql, connection);
                 MySqlDataReader rdr = cmd.ExecuteReader();
 
                 if (rdr.Read())
                 {
+                    id = rdr.GetInt32(0);
                     result = true;
                 }
                 rdr.Close();

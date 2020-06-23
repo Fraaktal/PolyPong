@@ -10,14 +10,14 @@ namespace PolyPongGameSite.Communication
     {
         //Partie Jeu
 
-        public async Task AskForGame(string idUserS)
+        public async Task AskForGame()
         {
-            GameManager.GetInstance().GetExistingGameOrCreateIt(Context.ConnectionId, idUserS);
+            GameManager.GetInstance().GetExistingGameOrCreateIt(Context.ConnectionId);
         }
 
-        public async Task PlayerConnectedToGame(string playerId, string GameId, bool isP2)
+        public async Task ConnectAndDisplayWaitingConnexionScreen(string playerId, string GameId, string uniqueIdToDisplay, bool isP2)
         {
-            await Clients.Clients(playerId).SendAsync("CurrentPlayerConnected", playerId, GameId, isP2);
+            await Clients.Clients(playerId).SendAsync("ConnectAndDisplayWaitingConnexionScreen", playerId, GameId, uniqueIdToDisplay, isP2);
         }
         
         public async Task StartGame(string player1Id, string player2Id)
@@ -25,19 +25,35 @@ namespace PolyPongGameSite.Communication
             await Clients.Clients(player1Id, player2Id).SendAsync("StartGame");
         }
         
-        public async Task Player_Left(string player1ConnectionId, string player2ConnectionId, bool isP1)
+        public async Task Player_Left(string gameId, int idUser)
         {
-            await Clients.Clients(player1ConnectionId, player2ConnectionId).SendAsync("Player_Left", isP1);
+            Game game = GameManager.GetInstance().GetGameById(gameId);
+            if (game != null)
+            {
+                await Clients.Clients(game.Player1ConnectionId, game.Player2ConnectionId)
+                    .SendAsync("Player_Left", game.IsIdP1Id(idUser));
+            }
         }
 
-        public async Task Player_Right(string player1ConnectionId, string player2ConnectionId, bool isP1)
+        public async Task Player_Right(string gameId, int idUser)
         {
-            await Clients.Clients(player1ConnectionId, player2ConnectionId).SendAsync("Player_Right", isP1);
+            Game game = GameManager.GetInstance().GetGameById(gameId);
+            if (game != null)
+            {
+                await Clients.Clients(game.Player1ConnectionId, game.Player2ConnectionId)
+                    .SendAsync("Player_Right", game.IsIdP1Id(idUser));
+            }
+
         }
 
-        public async Task Player_StopMoving(string player1ConnectionId, string player2ConnectionId, bool isP1)
+        public async Task Player_StopMoving(string gameId, int idUser)
         {
-            await Clients.Clients(player1ConnectionId, player2ConnectionId).SendAsync("Player_StopMoving", isP1);
+            Game game = GameManager.GetInstance().GetGameById(gameId);
+            if (game != null)
+            {
+                await Clients.Clients(game.Player1ConnectionId, game.Player2ConnectionId)
+                    .SendAsync("Player_StopMoving", game.IsIdP1Id(idUser));
+            }
         }
 
         public async Task EndGame(int p1Score, int p2Score, string idParty)
@@ -47,15 +63,27 @@ namespace PolyPongGameSite.Communication
 
         //Partie App
 
-        public async Task AskForLog(string log, string pass)
+        public async Task User_Try_Log_From_App(string log, string pass, string uniqueIdConnection)
         {
             //TODO encrypt
-
+            bool res = false;
             string sender = Context.ConnectionId;
+            string gameId = "";
 
-            bool isLogOk = CUserController.GetInstance().TryLogUser(log,pass);
+            bool isLogOk = CUserController.GetInstance().TryLogUser(log,pass, out int id);
 
-            await Clients.Clients(sender).SendAsync("Connexion", isLogOk);
+            if (isLogOk)
+            {
+                res = GameManager.GetInstance().FindGameWithPlayerIdIfExist(id, uniqueIdConnection, out string connectionId, out gameId);
+
+                if (res)
+                {
+                    await Clients.Clients(connectionId).SendAsync("AppConnected");
+                }
+            }
+
+
+            await Clients.Clients(sender).SendAsync("PlayerConnected", isLogOk && res, gameId, id);
         }
     }
 }

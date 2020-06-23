@@ -11,19 +11,36 @@ namespace PolyPongGameSite.Business
 {
     public class Game
     {
-        public Game(string connectionIdP1, string idP1)
+        public Game(string connectionIdP1)
         {
-            GameConnection = new HubConnectionBuilder().WithUrl("http://vps805844.ovh.net:50322/GameHub").Build();
-#if DEBUG
-            GameConnection = new HubConnectionBuilder().WithUrl("https://localhost:44396/PolyHub").Build();
-#endif
+            GameConnection = new HubConnectionBuilder().WithUrl("http://192.168.1.13:45457/PolyHub").Build();
             Player1ConnectionId = connectionIdP1;
-            Player1Id = idP1;
+            Player1uniqueIdConnection = RandomString(5);
 
+            Console.WriteLine(Player1Id);
             Connect();
 
+            Player1Id = -1;
+            Player2Id = -1;
+            
             ListenControllerEvent();
         }
+
+        public string Player1ConnectionId { get; set; }
+
+        public string Player2ConnectionId { get; set; }
+
+        public int Player1Id { get; set; }
+
+        public int Player2Id { get; set; }
+
+        public string Player1uniqueIdConnection { get; set; }
+
+        public string Player2uniqueIdConnection { get; set; }
+
+        public int Player1Score { get; set; }
+
+        public int Player2Score { get; set; }
 
         public string GameId
         {
@@ -36,7 +53,7 @@ namespace PolyPongGameSite.Business
             {
                 await GameConnection.StartAsync();
 
-                await GameConnection.InvokeAsync("PlayerConnectedToGame", Player1ConnectionId, GameId, false);
+                await GameConnection.InvokeAsync("ConnectAndDisplayWaitingConnexionScreen", Player1ConnectionId, GameId, Player1uniqueIdConnection, false);
             }
             catch (Exception e)
             {
@@ -51,34 +68,57 @@ namespace PolyPongGameSite.Business
 
         private void RegisterScore(int p1Score, int p2Score)
         {
-            //TODO demander a marine de passer en param du site l'id de luser
-            //TODO de mon coté il faudra récup cet id coté serveur et attendre que l'user se co avec son tel des deux coté avant de lancer la partie
+            //TODO de mon coté il faudra attendre que l'user se co avec son tel des deux coté avant de lancer la partie
             //TODO coté client on affichera un écran demandant de se connecter avec le tel s'il est pas connecté, pusi un ecran d'attente si l'autre est pas co
             //TODO puis le jeu.
             CUserController.GetInstance().RegisterScore(p1Score, p2Score);
         }
 
         public HubConnection GameConnection { get; set; }
-        
-        public string Player1ConnectionId { get; set; }
 
-        public string Player2ConnectionId { get; set; }
-
-        public string Player1Id { get; set; }
-
-        public string Player2Id { get; set; }
-
-        public int Player1Score { get; set; }
-
-        public int Player2Score { get; set; }
-
-        public void JoinPlayer(string idCP2, string idP2)
+        public void JoinPlayer(string idCP2)
         {
             Player2ConnectionId = idCP2;
-            Player2Id = idP2;
+            Player2uniqueIdConnection = RandomString(5);
+            
+            GameConnection.InvokeAsync("ConnectAndDisplayWaitingConnexionScreen", Player2ConnectionId, GameId, Player2uniqueIdConnection, true);
+        }
 
-            GameConnection.InvokeAsync("PlayerConnectedToGame", Player2ConnectionId, GameId, true);
-            GameConnection.InvokeAsync("StartGame", Player1ConnectionId, Player2ConnectionId);
+        public void Player1ControllerJoined(int id)
+        {
+            Player1Id = id;
+
+            if (Player2Id != -1)
+            {
+                GameConnection.InvokeAsync("StartGame", Player1ConnectionId, Player2ConnectionId);
+            }
+        }
+
+        public void Player2ControllerJoined(int id)
+        {
+            Player2Id = id;
+
+            if (Player1Id != -1)
+            {
+                GameConnection.InvokeAsync("StartGame", Player1ConnectionId, Player2ConnectionId);
+            }
+        }
+
+        private string RandomString(int length)
+        {
+            Random random = new Random();
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            return new string(Enumerable.Repeat(chars, length).Select(s => s[random.Next(s.Length)]).ToArray());
+        }
+
+        public bool IsIdP1Id(int id)
+        {
+            if (Player1Id == id)
+            {
+                return true;
+            }
+
+            return false;
         }
     }
 }

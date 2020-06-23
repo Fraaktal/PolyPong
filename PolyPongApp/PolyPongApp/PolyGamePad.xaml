@@ -11,8 +11,19 @@
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <Button Grid.Column="0" Text="Gauche" FontAttributes="Bold" FontSize="30" WidthRequest="200" />
-            <Button Grid.Column="1" Text="Droite" FontAttributes="Bold" FontSize="30" />
+            <Button Grid.Column="0" 
+                    Text="Gauche" 
+                    FontAttributes="Bold" 
+                    FontSize="30" 
+                    WidthRequest="200" 
+                    Released="OnBtnLeft_Released"
+                    Pressed="OnBtnLeft_Pressed"/>
+            <Button Grid.Column="1" 
+                    Text="Droite" 
+                    FontAttributes="Bold" 
+                    FontSize="30" 
+                    Released="OnBtnRight_Released"
+                    Pressed="OnBtnRight_Pressed"/>
         </Grid>
     </ContentPage.Content>
 </ContentPage>
