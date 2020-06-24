@@ -13,7 +13,7 @@ namespace PolyPongGameSite.Business
     {
         public Game(string connectionIdP1)
         {
-            GameConnection = new HubConnectionBuilder().WithUrl("http://192.168.1.13:45457/PolyHub").Build();
+            GameConnection = new HubConnectionBuilder().WithUrl("http://192.168.1.13:45455/PolyHub").Build();
             Player1ConnectionId = connectionIdP1;
             Player1uniqueIdConnection = RandomString(5);
 

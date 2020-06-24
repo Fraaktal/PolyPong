@@ -25,34 +25,44 @@ namespace PolyPongGameSite.Communication
             await Clients.Clients(player1Id, player2Id).SendAsync("StartGame");
         }
         
-        public async Task Player_Left(string gameId, int idUser)
+        public async Task Player_Up(string gameId, int idUser)
         {
             Game game = GameManager.GetInstance().GetGameById(gameId);
             if (game != null)
             {
                 await Clients.Clients(game.Player1ConnectionId, game.Player2ConnectionId)
-                    .SendAsync("Player_Left", game.IsIdP1Id(idUser));
+                    .SendAsync("Player_Up", game.IsIdP1Id(idUser));
             }
         }
 
-        public async Task Player_Right(string gameId, int idUser)
+        public async Task Player_Down(string gameId, int idUser)
         {
             Game game = GameManager.GetInstance().GetGameById(gameId);
             if (game != null)
             {
                 await Clients.Clients(game.Player1ConnectionId, game.Player2ConnectionId)
-                    .SendAsync("Player_Right", game.IsIdP1Id(idUser));
+                    .SendAsync("Player_Down", game.IsIdP1Id(idUser));
             }
 
         }
 
-        public async Task Player_StopMoving(string gameId, int idUser)
+        public async Task Player_StopMoving_Down(string gameId, int idUser)
         {
             Game game = GameManager.GetInstance().GetGameById(gameId);
             if (game != null)
             {
                 await Clients.Clients(game.Player1ConnectionId, game.Player2ConnectionId)
-                    .SendAsync("Player_StopMoving", game.IsIdP1Id(idUser));
+                    .SendAsync("Player_StopMoving_Down", game.IsIdP1Id(idUser));
+            }
+        }
+        
+        public async Task Player_StopMoving_Up(string gameId, int idUser)
+        {
+            Game game = GameManager.GetInstance().GetGameById(gameId);
+            if (game != null)
+            {
+                await Clients.Clients(game.Player1ConnectionId, game.Player2ConnectionId)
+                    .SendAsync("Player_StopMoving_Up", game.IsIdP1Id(idUser));
             }
         }
 

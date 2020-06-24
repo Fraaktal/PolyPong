@@ -18,32 +18,32 @@ namespace PolyPongApp
             InitializeComponent();
         }
 
-        private void OnBtnLeft_Released(object sender, EventArgs e)
+        private void OnBtnHaut_Released(object sender, EventArgs e)
         {
             string gameId = CommunicationManager.GetInstance().GameId;
             int playerId = CommunicationManager.GetInstance().PlayerId;
-            CommunicationManager.GetInstance().Connection.SendAsync("Player_StopMoving", gameId, playerId);
+            CommunicationManager.GetInstance().Connection.SendAsync("Player_StopMoving_Up", gameId, playerId);
         }
 
-        private void OnBtnLeft_Pressed(object sender, EventArgs e)
+        private void OnBtnHaut_Pressed(object sender, EventArgs e)
         {
             string gameId = CommunicationManager.GetInstance().GameId;
             int playerId = CommunicationManager.GetInstance().PlayerId;
-            CommunicationManager.GetInstance().Connection.SendAsync("Player_Left", gameId, playerId);
+            CommunicationManager.GetInstance().Connection.SendAsync("Player_Up", gameId, playerId);
         }
 
-        private void OnBtnRight_Released(object sender, EventArgs e)
+        private void OnBtnBas_Released(object sender, EventArgs e)
         {
             string gameId = CommunicationManager.GetInstance().GameId;
             int playerId = CommunicationManager.GetInstance().PlayerId;
-            CommunicationManager.GetInstance().Connection.SendAsync("Player_StopMoving", gameId, playerId);
+            CommunicationManager.GetInstance().Connection.SendAsync("Player_StopMoving_Down", gameId, playerId);
         }
 
-        private void OnBtnRight_Pressed(object sender, EventArgs e)
+        private void OnBtnBas_Pressed(object sender, EventArgs e)
         {
             string gameId = CommunicationManager.GetInstance().GameId;
             int playerId = CommunicationManager.GetInstance().PlayerId;
-            CommunicationManager.GetInstance().Connection.SendAsync("Player_Right", gameId, playerId);
+            CommunicationManager.GetInstance().Connection.SendAsync("Player_Down", gameId, playerId);
         }
     }
 }

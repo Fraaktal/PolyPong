@@ -7,23 +7,23 @@
              x:Class="PolyPongApp.PolyGamePad">
     <ContentPage.Content>
         <Grid HorizontalOptions="CenterAndExpand">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-            <Button Grid.Column="0" 
-                    Text="Gauche" 
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Button Grid.Row="0" 
+                    Text="Haut" 
                     FontAttributes="Bold" 
                     FontSize="30" 
                     WidthRequest="200" 
-                    Released="OnBtnLeft_Released"
-                    Pressed="OnBtnLeft_Pressed"/>
-            <Button Grid.Column="1" 
-                    Text="Droite" 
+                    Released="OnBtnHaut_Released"
+                    Pressed="OnBtnHaut_Pressed"/>
+            <Button Grid.Row="1" 
+                    Text="Bas" 
                     FontAttributes="Bold" 
                     FontSize="30" 
-                    Released="OnBtnRight_Released"
-                    Pressed="OnBtnRight_Pressed"/>
+                    Released="OnBtnBas_Released"
+                    Pressed="OnBtnBas_Pressed"/>
         </Grid>
     </ContentPage.Content>
 </ContentPage>
