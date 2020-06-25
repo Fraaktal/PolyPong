@@ -90,7 +90,7 @@ namespace PolyPongGameSite.Business
 
             if (Player2Id != -1)
             {
-                GameConnection.InvokeAsync("StartGame", Player1ConnectionId, Player2ConnectionId);
+                GameConnection.InvokeAsync("StartGame", Player1ConnectionId, Player2ConnectionId, Player1Id, Player2Id);
             }
         }
 
@@ -100,7 +100,7 @@ namespace PolyPongGameSite.Business
 
             if (Player1Id != -1)
             {
-                GameConnection.InvokeAsync("StartGame", Player1ConnectionId, Player2ConnectionId);
+                GameConnection.InvokeAsync("StartGame", Player1ConnectionId, Player2ConnectionId, Player1Id, Player2Id);
             }
         }
 

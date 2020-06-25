@@ -17,12 +17,12 @@ namespace PolyPongGameSite.Communication
 
         public async Task ConnectAndDisplayWaitingConnexionScreen(string playerId, string GameId, string uniqueIdToDisplay, bool isP2)
         {
-            await Clients.Clients(playerId).SendAsync("ConnectAndDisplayWaitingConnexionScreen", playerId, GameId, uniqueIdToDisplay, isP2);
+            await Clients.Clients(playerId).SendAsync("ConnectAndDisplayWaitingConnexionScreen", GameId, uniqueIdToDisplay, isP2);
         }
         
-        public async Task StartGame(string player1Id, string player2Id)
+        public async Task StartGame(string player1ConnexionId, string player2ConnexionId, int player1Id, int player2Id)
         {
-            await Clients.Clients(player1Id, player2Id).SendAsync("StartGame");
+            await Clients.Clients(player1ConnexionId, player2ConnexionId).SendAsync("StartGame", player1Id, player2Id);
         }
         
         public async Task Player_Up(string gameId, int idUser)
@@ -63,6 +63,15 @@ namespace PolyPongGameSite.Communication
             {
                 await Clients.Clients(game.Player1ConnectionId, game.Player2ConnectionId)
                     .SendAsync("Player_StopMoving_Up", game.IsIdP1Id(idUser));
+            }
+        }
+        public async Task AskForPause(string gameId)
+        {
+            Game game = GameManager.GetInstance().GetGameById(gameId);
+            if (game != null)
+            {
+                await Clients.Clients(game.Player1ConnectionId, game.Player2ConnectionId)
+                    .SendAsync("PauseAsked");
             }
         }
 
